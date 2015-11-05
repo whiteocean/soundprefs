@@ -1,5 +1,5 @@
 clc; close all; clear;%making a change!
-
+%and another change!
 path_vlc = '/Applications/VLC.app/Contents/MacOS/VLC';
 path_vid = '/Users/Miren/Documents/MATLAB/Misophonia/chips_aud_vid_short.mp4'; %%update this to be whatever path your file is in
 
