@@ -1,7 +1,11 @@
-clc; close all; clear;%making a change!
-%and another change!
+function [] = runVLC()
+%% runVLC.m
+
 path_vlc = '/Applications/VLC.app/Contents/MacOS/VLC';
-path_vid = '/Users/Miren/Documents/MATLAB/Misophonia/chips_aud_vid_short.mp4'; %%update this to be whatever path your file is in
+
+% update this to be whatever path your file is in
+% path_vid = '/Users/Miren/Documents/MATLAB/Misophonia/chips_aud_vid_short.mp4'; 
+path_vid = '/Users/bradleymonk/Documents/MATLAB/GIT/soundprefs/Media/chips_aud_vid_short.mp4';
 
 syscmd_appVLC = 'osascript vlc.scpt';
 syscmd_runVLC = ['open -a ' path_vlc ' ' path_vid];
@@ -31,3 +35,6 @@ pause(2)
 disp('initiate: closing Terminal')
 system(syscmd_killTERM,'-echo')
 disp('finished: closing Terminal')
+
+
+end
