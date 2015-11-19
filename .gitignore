@@ -10,6 +10,8 @@ Rakefile
 
 
 # Ignore entire directory
+media/
 media/archive
+media/misc
 
 *.m~  # temporary MATLAB files
