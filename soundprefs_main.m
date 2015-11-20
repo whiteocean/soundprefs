@@ -1,4 +1,5 @@
 %% Sound Preferences Experiment
+%% soundprefs_main.m
 
 %Drain dripping vs rain. Why are isolated sounds coming from a
 %single source more annoying? Are there just some sounds that people
@@ -22,7 +23,7 @@ global audioPlayerObj_B
 
 %% GET MEDIA FILES
 
-% Get the full paths to all mp4 files in chosen directory
+% Get the full paths to all mp3 or mp4 files in chosen directory
 mediaFilePaths = soundprefs_getfiles();
 
 
@@ -65,11 +66,11 @@ audioPlayerObjFpS_B = audioPlayerObj_B.SampleRate;
 
 % play(playerObj,[start,stop])
 
-disp('Playing Sound A')
-playblocking(audioPlayerObj_A,[1,audioPlayerObjFpS_A*5])
-
-disp('Playing Sound B')
-playblocking(audioPlayerObj_B,[1,audioPlayerObjFpS_B*5])
+% disp('Playing Sound A')
+% playblocking(audioPlayerObj_A,[1,audioPlayerObjFpS_A*5])
+% 
+% disp('Playing Sound B')
+% playblocking(audioPlayerObj_B,[1,audioPlayerObjFpS_B*5])
 
 
 
@@ -88,6 +89,7 @@ soundprefs_cgui(audioPlayerObj_A,audioPlayerObj_B)
 % isplaying(audioPlayerObj_A)
 % pause(audioPlayerObj_A)
 % resume(audioPlayerObj_A)
+% stop(audioPlayerObj_A)
 
 
 

@@ -1,12 +1,29 @@
 function varargout = soundprefs_cgui(varargin)
-%% soundprefs_cgui
+%% soundprefs_cgui.m
+
+clc
+disp('soundprefs_cgui.m')
 
 
-global tempfilename
-tempfilename = '';
 
-global LifeImageFile
-LifeImageFile = 0;
+global playTimeA
+playTimeA = 0.0;
+
+global playTimeB
+playTimeB = 0.0;
+
+global elapsedTime
+elapsedTime = 0.0;
+
+global elapsedTimeAlpha
+elapsedTimeAlpha = 0.0;
+
+global elapsedTimeBeta
+elapsedTimeBeta = 0.0;
+
+global alldone
+alldone = 0;
+
 
 if nargin > 0
 audioPlayerObj_A = varargin{1};
@@ -17,54 +34,299 @@ end
 %Initialization code for GUI creation
 
 
-initmenuh = figure('Units', 'normalized','Position', [.4 .4 .2 .15], 'BusyAction', 'cancel', 'Menubar', 'none', 'Name', 'FLIM analysis', 'Tag', 'FLIM analysis'); 
-beginplaybackh = uicontrol('Units', 'normalized','Parent', initmenuh, 'Position', [.1 .1 .8 .8], 'String', 'Begin Playback', 'FontSize', 16, 'Tag', 'Begin Playback', 'Callback', @beginplayback);
+initmenuh = figure('Units', 'normalized','Position', [.4 .4 .2 .15], 'BusyAction', 'cancel',...
+                   'Menubar', 'none', 'Name', 'soundprefs_exp', 'Tag', 'soundprefs_exp'); 
+
+playbackh = uicontrol('Units', 'normalized','Parent', initmenuh, 'Position', [.1 .1 .8 .8],...
+                           'String', 'Playback', 'FontSize', 16, 'Tag', 'Playback', 'Callback', @playback);
 
 
-intimagewh = figure('Units', 'normalized','Position', [.4 .4 .2 .15], 'BusyAction', 'cancel', 'Menubar', 'none', 'Name', 'Lifetime image', 'Tag', 'lifetime image', 'Visible', 'Off', 'KeyPressFcn', @keypress);
-
-playAh = uicontrol('Parent', intimagewh, 'Units', 'normalized', 'Position', [0.07 0.3 0.4 0.5], 'FontSize', 14, 'String', 'Play Sound A', 'Callback', @playA);
-playBh = uicontrol('Parent', intimagewh, 'Units', 'normalized', 'Position', [0.55 0.3 0.4 0.5], 'FontSize', 14, 'String', 'Play Sound B', 'Callback', @playB);
-
+intimagewh = figure('Units', 'normalized','Position', [.4 .4 .2 .15], 'BusyAction', 'cancel',...
+                    'Menubar', 'none', 'Name', 'Initial_Image', 'Tag', 'Initial_Image',...
+                    'Visible', 'Off', 'KeyPressFcn', @keypress);
 
 
+playAh = uicontrol('Parent', intimagewh, 'Units', 'normalized', 'Position', [0.07 0.3 0.4 0.5],...
+                    'FontSize', 14, 'String', 'Play Sound A', 'Callback', @playA);
 
-function beginplayback(hObject, eventdata)
 
-    set(intimagewh, 'Visible', 'On');
+playBh = uicontrol('Parent', intimagewh, 'Units', 'normalized', 'Position', [0.55 0.3 0.4 0.5],...
+                   'FontSize', 14, 'String', 'Play Sound B', 'Callback', @playB);
+
+
+% slidetimerh = uicontrol('Parent', intimagewh, 'Units', 'normalized','Position', [.05 .05 .8 0.1],...
+%                         'Style', 'slider','Min',1,'Max',30,'Value',2,'Callback', @slidetimer);
+
+
+
+
+
+
+
+function playback(playbackh, eventdata)
+
+
     set(initmenuh, 'Visible', 'Off');
-    
+
+
+    disp('Playing Sound A for 5 seconds')
+    playblocking(audioPlayerObj_A,[1,audioPlayerObj_A.SampleRate*5])
+
+    disp('Playing Sound B for 5 seconds')
+    playblocking(audioPlayerObj_B,[1,audioPlayerObj_B.SampleRate*5])
+
+
+    set(intimagewh, 'Visible', 'On');    
+
+
+
+    disp('User can now select sound A or B (Sound A is currently playing)!')
+    set(playAh, 'Visible', 'Off'); set(playBh, 'Visible', 'On');
+
+    play(audioPlayerObj_B); 
+    pause(audioPlayerObj_B)
     play(audioPlayerObj_A)
+
+
+    tic;
+    elapsedTime = toc;
+    elapsedTimeAlpha = elapsedTime;
+
+    if elapsedTime > 30
+        soundprefs_endTrial(audioPlayerObj_A, audioPlayerObj_B, playTimeA, playTimeB)
+    end
     
 end
 
 
 
-
 function playA(playAh, eventData)
+
+    set(playAh, 'Visible', 'Off');
+    set(playBh, 'Visible', 'On');
+
+
+    playTimeB(end+1) = toc - elapsedTimeAlpha;
+    elapsedTimeAlpha = toc;
+
+
+    disp('playTimeB:'); disp(playTimeB); disp(' ')
+    disp('Sound A is now playing')
 
 
     if isplaying(audioPlayerObj_B)
         pause(audioPlayerObj_B)
     end
 
-    play(audioPlayerObj_A)
+    resume(audioPlayerObj_A)
+
+    checkTime('A')
 
 end
+
 
 
 
 function playB(playBh, eventData)
 
+    set(playBh, 'Visible', 'Off');
+    set(playAh, 'Visible', 'On');
+
+    playTimeA(end+1) = toc - elapsedTimeAlpha;
+    elapsedTimeAlpha = toc;
+
+    disp('playTimeA:'); disp(playTimeA); disp(' ')
+    disp('Sound B is now playing')
+
+
     if isplaying(audioPlayerObj_A)
         pause(audioPlayerObj_A)
     end
 
-    play(audioPlayerObj_B)
+    resume(audioPlayerObj_B)
+
+    checkTime('B')
 
 end
 
 
+
+
+function checkTime(AB)
+
+    
+    while toc < 30
+        % slidetimer(slidetimerh)
+        pause(.1)
+    end
+
+
+
+    if toc > 30 && alldone == 0
+        
+        if strcmp('A',AB)
+
+            playTimeA(end+1) = toc - elapsedTimeAlpha;
+
+        elseif strcmp('B',AB)
+
+            playTimeB(end+1) = toc - elapsedTimeAlpha;
+
+        end
+
+
+        if isplaying(audioPlayerObj_A)
+            disp('stopping audio playback')
+            stop(audioPlayerObj_A)
+        end
+
+        if isplaying(audioPlayerObj_B)
+            disp('stopping audio playback')
+            stop(audioPlayerObj_B)
+        end
+
+        set(initmenuh, 'Visible', 'On');
+        set(intimagewh, 'Visible', 'Off');
+        soundprefs_end(playTimeA, playTimeB)
+        % soundprefs_endTrial(audioPlayerObj_A, audioPlayerObj_B, playTimeA, playTimeB)
+        % soundprefs_nextSound(audioPlayerObj_A, audioPlayerObj_B, playTimeA, playTimeB)
+
+        alldone = 1;
+    end
+
+end
+
+
+
+
+function soundprefs_end(playTimeA, playTimeB)
+
+    disp(' '); disp(' '); disp(' '); disp(' ')
+    disp('Trial finished'); disp(' ')
+
+    disp('Elapsed time segments for Sound A')
+    disp(playTimeA);
+
+    fprintf('\r Total seconds Sound A was played: % 9.6g  \r \r',sum(playTimeA))
+
+    disp('Elapsed time segments for Sound B')
+    disp(playTimeB);
+
+    fprintf('\r Total seconds Sound B was played: % 9.6g  \r',sum(playTimeB))
+
+
+    totElapsedTime = sum(playTimeA) + sum(playTimeB);
+    fprintf('\r Total elapsed seconds: % 9.6g  \r',totElapsedTime)
+
+    disp(' '); disp(' ');
+
+end
+
+
+
+
+
+
+%{
+function playA(playAh, eventData)
+
+    set(playAh, 'Visible', 'Off');
+    set(playBh, 'Visible', 'On');
+
+    elapsedTimeBeta = toc;
+    eTime = elapsedTimeBeta - elapsedTimeAlpha;
+
+    playTimeB(end+1) = eTime;
+    elapsedTimeAlpha = toc;
+
+    disp('playTimeB:'); 
+    disp(playTimeB); 
+    disp(' ')
+    disp('Sound A is now playing')
+
+
+    if isplaying(audioPlayerObj_B)
+        pause(audioPlayerObj_B)
+    end
+
+    resume(audioPlayerObj_A)
+
+
+    if toc > 30
+        soundprefs_endTrial(audioPlayerObj_A, audioPlayerObj_B, playTimeA, playTimeB)
+    else
+        checkTime('A')
+    end
+
+
+end
+
+
+
+
+
+
+function playB(playBh, eventData)
+
+    set(playBh, 'Visible', 'Off');
+    set(playAh, 'Visible', 'On');
+
+    elapsedTimeBeta = toc;
+    eTime = elapsedTimeBeta - elapsedTimeAlpha;
+
+    playTimeA(end+1) = eTime;
+    elapsedTimeAlpha = toc;
+
+    disp('playTimeA:'); 
+    disp(playTimeA); 
+    disp(' ')
+    disp('Sound B is now playing')
+
+
+    if isplaying(audioPlayerObj_A)
+        pause(audioPlayerObj_A)
+    end
+
+    resume(audioPlayerObj_B)
+
+
+    if toc > 30
+        soundprefs_endTrial(audioPlayerObj_A, audioPlayerObj_B, playTimeA, playTimeB)
+    else
+        checkTime('B')
+    end
+
+end
+%}
+
+
+ 
+
+
+% IF WE WANT TO DISPLAY A TIMER ON THE GUI
+% ---------------------------------------
+%{
+function slidetimer(slidetimerh)
+
+%     sliderPos = get(slidetimerh,'Value');    % returns position of slider
+% 
+%     sliderMin = get(slidetimerh,'Min');
+%     sliderMax = get(slidetimerh,'Max');
+% 
+%     % to determine...
+%     slider_value = get(slidetimerh,'Value');
+%     display(slider_value);
+
+    tocVal = toc;
+    if tocVal < 30
+    slidetimerh.Value = toc;
+    else
+    slidetimerh.Value = 30;
+    end
+
+end
+%}
+% ---------------------------------------
 
 
 % IF WE WANT A SINGLE BUTTON THAT SWITCHES, USE THIS CODE...

@@ -5,14 +5,14 @@ Rakefile
 *.aux
 *.log
 *.out
-
 *.mexmaci64
 
 
-# Ignore entire directory
-media/
+# Ignore all files in directory
+# media/ <- this would ignore the media dir
 media/archive
 media/misc
+media/ASMR
 
 # Ignore temporary MATLAB files
 *.m~
