@@ -1,4 +1,4 @@
-function [mediaFilePaths] = soundprefs_getfiles()
+function [mediaFilePaths] = soundprefs_getfiles(varargin)
 %% soundprefs_getfiles.m
 
 
@@ -6,14 +6,19 @@ function [mediaFilePaths] = soundprefs_getfiles()
 
 % persistent LookInFolder 
 
-thisfile='soundprefs_getfiles';
-LookInFolder = uigetdir(thisfile);
+if nargin
+    LookInFolder = varargin{1};
+else
+    thisfile='soundprefs_getfiles';
+    LookInFolder = uigetdir(thisfile);
+end
+
 
 mp4dir = dir(fullfile(LookInFolder,'/*.mp*'));
 mediaFiles = {mp4dir.name};
 
 [fppath,fpdir,fpext] = fileparts(LookInFolder);
-mediaFolderPath = [fppath,'/',fpdir,'/']
+mediaFolderPath = [fppath,'/',fpdir,'/'];
 
 for nn = 1:numel(mediaFiles)
     mediaFilePaths{nn} = [mediaFolderPath mediaFiles{nn}];

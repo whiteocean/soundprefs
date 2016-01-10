@@ -10,23 +10,56 @@
 %Design: Play two sounds at a subject, force them to choose which one they
 %would rather listen to for X amount of time. Randomly pair the sounds. 
 
+%% CLEAR WORKSPACE | CLEAR COMMAND WINDOW | CLOSE FIGURES
+
 clc; close all; clear
 
-thisFolder=fileparts(which('soundprefs_main.m'));
-cd(thisFolder); % addpath(thisFolder);
+% thisFolder=fileparts(which('soundprefs_main.m'));
+% cd(thisFolder); % addpath(thisFolder);
 
 
+
+
+for nn = 1:3
+
+
+soundprefs_gui
+
+% uiwait
+
+
+
+end
+
+
+
+
+
+
+%% DECLARE GLOBALS
+
+global TotalTrials
+TotalTrials = 2;
+
+global CurrentTrialNumber
+CurrentTrialNumber = 1;
 
 global audioPlayerObj_A
 global audioPlayerObj_B
+
+global randOrd
+global mediaFileA
+global mediaFileB
+
 
 
 %% GET MEDIA FILES
 
 % Get the full paths to all mp3 or mp4 files in chosen directory
-mediaFilePaths = soundprefs_getfiles();
 
-
+% mediaFilePaths = soundprefs_getfiles();
+mediaPath = '/Users/bradleymonk/Documents/MATLAB/GIT/soundprefs/media/sounds/';
+mediaFilePaths = soundprefs_getfiles(mediaPath);
 
 
 %% CREATE RANDOM MEDIA FILE PAIRINGS
@@ -61,24 +94,32 @@ audioPlayerObjFpS_B = audioPlayerObj_B.SampleRate;
 
 
 
-%% PLAY 5-SECOND TEASER OF EACH CLIP
-
-
-% play(playerObj,[start,stop])
-
-% disp('Playing Sound A')
-% playblocking(audioPlayerObj_A,[1,audioPlayerObjFpS_A*5])
-% 
-% disp('Playing Sound B')
-% playblocking(audioPlayerObj_B,[1,audioPlayerObjFpS_B*5])
-
-
-
 %% OPEN SOUND SELECTOR GUI, BEGIN FULL 30-SEC PLAYBACK ALLOWING USER CHOICE
 
 
-soundprefs_cgui(audioPlayerObj_A,audioPlayerObj_B)
+for nn = 1:TotalTrials
 
+%     if CurrentTrialNumber == TotalTrials
+%         set(initmenuh, 'Visible', 'Off');
+%         set(intimagewh, 'Visible', 'Off');
+%         disp('EXPERIMENT FINISHED!!!')
+%         return
+%     end
+
+
+    soundprefs_guid(audioPlayerObj_A,audioPlayerObj_B,randOrd,...
+                               TotalTrials,CurrentTrialNumber);
+
+    CurrentTrialNumber = CurrentTrialNumber + 1;
+    disp(CurrentTrialNumber)
+
+
+end
+
+
+
+
+%% AUDIO CONTROLS
 
 % play(audioPlayerObj_A)
 % 
