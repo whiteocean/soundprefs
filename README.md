@@ -16,7 +16,7 @@ to identify universally disliked sounds and their common threads.
 
 - Do males and females find the same sounds pleasing or aversive? Do humans and animals?
 
-
+- Are there differences between Misophonics, ASMRs, and Controls, and which group is more like controls (Misophonics or ASMRs)?
 
 
 
