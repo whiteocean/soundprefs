@@ -338,7 +338,7 @@ function saveData(playTimeA, playTimeB, CurrentTrialNumber)
     TrialTimes{CurrentTrialNumber} = sum(playTimeA) + sum(playTimeB);
 
 
-    alldata{CurrentTrialNumber} = {playTimeA, playTimeB};
+    alldata{CurrentTrialNumber} = {playTimeA, playTimeB; mediaFileA{CurrentTrialNumber}, mediaFileB{CurrentTrialNumber}};
 
 
     if CurrentTrialNumber == 2
